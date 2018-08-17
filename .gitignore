@@ -1,2 +1,4 @@
 Hangman/venv
 Hangman/.idea
+Hangman/*.txt
+Hangman/__pycache__
