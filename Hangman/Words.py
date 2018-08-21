@@ -31,11 +31,11 @@ class Words(object):
         try:
             self.run_sql('INSERT INTO words VALUES (NULL, ?, ?, ?)',
                          (word, language, self.set_difficulty(word, language)))
-        except InvalidCharacter:
-            print("Invalid Character")
+        except InvalidCharacter as e:
+            print(e)
 
-    def get_word(self, language='__', difficulty='_'):
-        return self.run_sql('SELECT Word FROM words WHERE Language LIKE ? AND Difficulty LIKE ?',
+    def get_word(self, language='%', difficulty='%'):
+        return self.run_sql('SELECT Word, Language FROM words WHERE Language LIKE ? AND Difficulty LIKE ?',
                             (language, difficulty))
 
     def set_difficulty(self, word, language):
@@ -59,7 +59,7 @@ class Words(object):
             if word[i].lower() in languages[language]:
                 difficulty += languages[language].index(word[i].lower())
             else:
-                raise InvalidCharacter
+                raise InvalidCharacter('\"' + word[i] + '\" is an invalid character', '2')
         difficulty = round(difficulty / len(word) / 5)
         # difficulty = round(5 / len(languages[language]) * (difficulty / len(word)))
         if difficulty > 5:
@@ -71,12 +71,12 @@ class Words(object):
     def add_file(self, file, language):
         try:
             if not os.path.isfile(file):
-                raise NotAFile
+                raise NotAFile('\"' + file + '\" is an invalid file path', '2')
             words = open(file, "r", encoding="utf-8").read().splitlines()
             percentage = 100 / len(words)
             for i in range(0, len(words)):
                 self.add_word(words[i], language)
                 print(str(percentage * i) + '%', end='\r')
             print("Success")
-        except NotAFile:
-            print("Not a file")
+        except NotAFile as e:
+            print(e)
