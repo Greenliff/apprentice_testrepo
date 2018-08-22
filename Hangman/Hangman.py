@@ -69,6 +69,8 @@ class InvalidCharacter(Exception):
 # This exception is raised whenever a user tries to access an invalid language
 class InvalidLanguage(Exception):
     def __init__(self, message, errors):
+        if message == '':
+            message = 'Invalid Language: "%s"' % errors
         super().__init__(message)
 
         self.errors = errors
@@ -77,6 +79,8 @@ class InvalidLanguage(Exception):
 # This exception is raised whenever a user tries to open a non-existing file
 class NotAFile(Exception):
     def __init__(self, message, errors):
+        if message == '':
+            message = '"%s" doesn\'t exist' % errors
         super().__init__(message)
 
         self.errors = errors
@@ -85,6 +89,8 @@ class NotAFile(Exception):
 # This exception is raised whenever a user tries to enter something other than a letter
 class InvalidLetter(Exception):
     def __init__(self, message, errors):
+        if message == '':
+            message = 'Invalid input: "%s"' % errors
         super().__init__(message)
 
         self.errors = errors
@@ -93,6 +99,8 @@ class InvalidLetter(Exception):
 # This exception is raised whenever a user enters a letter he already entered
 class Repetition(Exception):
     def __init__(self, message, errors):
+        if message == '':
+            message = 'You already tried "%s"' % errors
         super().__init__(message)
 
         self.errors = errors
@@ -176,14 +184,20 @@ class Main(object):
                 word = input("Word: ")
                 language = input("Language of the word: ")
                 try:
+                    if language not in LANGUAGES:
+                        raise InvalidLanguage('', language)
                     Words().add_word(word, language)
-                    print("Success")
-                except InvalidCharacter as e:
+                except InvalidLanguage as e:
                     print(e)
             elif choice == '2':
                 file = input("Location of the file: ")
                 language = input("Language of the words: ").lower()
-                Words().add_file(file, language)
+                try:
+                    Words().add_file(file, language)
+                except NotAFile as e:
+                    print(e)
+                except InvalidLanguage as e:
+                    print(e)
             elif choice.lower() == 'x':
                 break
             else:
@@ -194,13 +208,20 @@ class Main(object):
     def get_words(self, language, difficulty):
         if language in LANGUAGES:
             if difficulty in ('1', '2', '3', '4', '5'):
+                print("-------------------------------------------------------------")
                 return Words().get_word(language, difficulty)
             else:
+                print("Invalid difficulty, a random one will be selected")
+                print("-------------------------------------------------------------")
                 return Words().get_word(language)
         else:
+            print("Language wasn't recognized, a random one will be selected")
             if difficulty in ('1', '2', '3', '4', '5'):
+                print("-------------------------------------------------------------")
                 return Words().get_word('%', difficulty)
             else:
+                print("Invalid difficulty, a random one will be selected")
+                print("-------------------------------------------------------------")
                 return Words().get_word()
 
 
@@ -221,6 +242,7 @@ class Words(object):
         try:
             self.run_sql('INSERT INTO words VALUES (NULL, ?, ?, ?)',
                          (word, language, self.set_difficulty(word, language)))
+            print("Word added")
         except InvalidCharacter as e:
             print(e)
 
@@ -231,10 +253,7 @@ class Words(object):
 
     # This method calculates the difficulty of the words according to the frequency of each letter
     def set_difficulty(self, word, language):
-
         difficulty = 0
-        if language not in LANGUAGES:
-            language = 'en'
 
         if language == 'de':
             word = word.replace('ß', 'ss')
@@ -254,17 +273,17 @@ class Words(object):
 
     # This method adds every word in a file to the database
     def add_file(self, file, language):
-        try:
-            if not os.path.isfile(file):
-                raise NotAFile('\"' + file + '\" is an invalid file path', '2')
-            words = open(file, "r", encoding="utf-8").read().splitlines()
-            percentage = 100 / len(words)
-            for i in range(0, len(words)):
-                self.add_word(words[i], language)
-                print(str(percentage * i) + '%', end='\r')
-            print("Success")
-        except NotAFile as e:
-            print(e)
+        if not os.path.isfile(file):
+            raise NotAFile('', file)
+        if language not in LANGUAGES:
+            raise InvalidLanguage('', language)
+        words = open(file, "r", encoding="utf-8").read().splitlines()
+        percentage = 100 / len(words)
+        for i in range(0, len(words)):
+            if words[i] == '':
+                continue
+            self.add_word(words[i], language)
+            # print(str(percentage * i) + '%', end='\r')
 
 
 # This class executes the game itself
@@ -297,6 +316,7 @@ class Game(object):
 
     # This loop keeps going as long as the game is not over yet
     def play(self):
+        print(*self.get_hint())
         while self.alive:
             self.guess_letter(self.remove_special_chars((input("Letter: ").lower())))
 
@@ -304,9 +324,9 @@ class Game(object):
     def guess_letter(self, letter):
         try:
             if len(letter) != 1:
-                raise InvalidLetter('\"' + letter + '\" is not a valid input', '2')
+                raise InvalidLetter('', letter)
             elif letter in self.guesses:
-                raise Repetition('You already tried the letter \"' + letter + '\"', '2')
+                raise Repetition('', letter)
             else:
                 self.guesses.append(letter)
                 if letter in self.word_lower:
