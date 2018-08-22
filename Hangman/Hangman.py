@@ -85,6 +85,15 @@ class NotAFile(Exception):
 
         self.errors = errors
 
+# This exception is raised whenever a user tries to open a non-existing file
+class WordExists(Exception):
+    def __init__(self, message, errors):
+        if message == '':
+            message = '"%s" already exists' % errors
+        super().__init__(message)
+
+        self.errors = errors
+
 
 # This exception is raised whenever a user tries to enter something other than a letter
 class InvalidLetter(Exception):
@@ -240,11 +249,20 @@ class Words(object):
     # This method adds a word to the database
     def add_word(self, word, language):
         try:
+            if self.check_if_exists(word, language):
+                raise WordExists('', word)
             self.run_sql('INSERT INTO words VALUES (NULL, ?, ?, ?)',
                          (word, language, self.set_difficulty(word, language)))
             print("Word added")
         except InvalidCharacter as e:
             print(e)
+        except WordExists as e:
+            print(e)
+
+    def check_if_exists(self, word, language):
+        if not self.run_sql('SELECT Word, Language FROM words WHERE Word = ? AND Language = ?', (word, language)):
+            return False
+        return True
 
     # This method returns every word that has the language and difficulty that were given as parameters
     def get_word(self, language='%', difficulty='%'):
@@ -278,7 +296,7 @@ class Words(object):
         if language not in LANGUAGES:
             raise InvalidLanguage('', language)
         words = open(file, "r", encoding="utf-8").read().splitlines()
-        percentage = 100 / len(words)
+        # percentage = 100 / len(words)
         for i in range(0, len(words)):
             if words[i] == '':
                 continue
