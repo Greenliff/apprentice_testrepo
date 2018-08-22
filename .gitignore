@@ -2,3 +2,6 @@ Hangman/venv
 Hangman/.idea
 Hangman/*.txt
 Hangman/__pycache__
+Hangman/Game.py
+Hangman/Main.py
+Hangman/Words.py
