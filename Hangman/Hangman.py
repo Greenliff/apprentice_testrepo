@@ -2,6 +2,7 @@ from builtins import print
 from random import randint
 import sqlite3
 import os
+import logging
 
 HANGMAN = ['''  +---+
   |   |
@@ -54,6 +55,7 @@ LANGUAGES = {
     'es': ["e", "a", "r", "o", "s", "t", "n", "i", "d", "l", "c", "t", "u", "m", "p", "b", "g", "v", "ó", "y",
            "q", "h", "f", "z", "í", "j", "á", "ñ", "é", "x", "ú", "ü", "k", "w", "î"]
 }
+logger = logging.getLogger()
 
 
 # This exception is raised whenever a user tries to add a word to the database that contains an invalid character
@@ -84,6 +86,7 @@ class NotAFile(Exception):
         super().__init__(message)
 
         self.errors = errors
+
 
 # This exception is raised whenever a user tries to open a non-existing file
 class WordExists(Exception):
@@ -193,10 +196,14 @@ class Main(object):
                 word = input("Word: ")
                 language = input("Language of the word: ")
                 try:
+                    if len(word) < 1:
+                        raise InvalidCharacter('', '')
                     if language not in LANGUAGES:
                         raise InvalidLanguage('', language)
                     Words().add_word(word, language)
                 except InvalidLanguage as e:
+                    print(e)
+                except InvalidCharacter as e:
                     print(e)
             elif choice == '2':
                 file = input("Location of the file: ")
@@ -385,4 +392,11 @@ class Game(object):
 
 
 if __name__ == "__main__":
+    # logging.basicConfig(filename='log.txt', format='Time: %(asctime)s Message: %(message)s', datefmt='%d.%m.%Y %H:%M:%S',
+    #                     level=logging.DEBUG)
+    # logging.debug('debug')
+    # logging.info('info')
+    # logging.warning('warning')
+    # logging.error('error')
+    # logging.critical('critical')
     Main().main()
