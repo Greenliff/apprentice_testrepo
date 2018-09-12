@@ -3,6 +3,8 @@ from random import randint
 import sqlite3
 import os
 import logging
+import argparse
+from datetime import datetime, timedelta
 
 HANGMAN = ['''  +---+
   |   |
@@ -55,6 +57,7 @@ LANGUAGES = {
     'es': ["e", "a", "r", "o", "s", "t", "n", "i", "d", "l", "c", "t", "u", "m", "p", "b", "g", "v", "ó", "y",
            "q", "h", "f", "z", "í", "j", "á", "ñ", "é", "x", "ú", "ü", "k", "w", "î"]
 }
+
 logger = logging.getLogger()
 
 
@@ -392,11 +395,38 @@ class Game(object):
 
 
 if __name__ == "__main__":
-    # logging.basicConfig(filename='log.txt', format='Time: %(asctime)s Message: %(message)s', datefmt='%d.%m.%Y %H:%M:%S',
-    #                     level=logging.DEBUG)
-    # logging.debug('debug')
-    # logging.info('info')
-    # logging.warning('warning')
-    # logging.error('error')
-    # logging.critical('critical')
+    '''
+    logging.basicConfig(filename='log.txt', format='Time: %(asctime)s Message: %(message)s', datefmt='%d.%m.%Y %H:%M:%S',
+                        level=logging.DEBUG)
+    logging.debug('debug')
+    logging.info('info')
+    logging.warning('warning')
+    logging.error('error')
+    logging.critical('critical')
+    '''
+    logger.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    # configure console logger
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
+    # file handler
+    fh = logging.FileHandler('log.txt')
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+
+    # handle command line args
+    parser = argparse.ArgumentParser(description='Retrieve list of all recordings.')
+    parser.add_argument('-o', '--output', dest='output', default='output',
+                        help='The folder path to store all output and state.')
+    parser.add_argument('-s', '--skipothers', dest='skipothers', default=False, action='store_true',
+                        help='If true, skips the generation of a .csv file containing all other recordings for unhandled "nameofshow"s.')
+
+    args = parser.parse_args()
+
+    logger.info("Some info")
+    logger.info("Some more info")
+
     Main().main()
