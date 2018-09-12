@@ -1,0 +1,13 @@
+Caesarverschluesselung:
+In dieser Aufgabe ging es darum dass man ein Wort verschlüsseln kann.
+Man gibt ein Wort und eine Zahl ein und die Buchstaben werden anhand der Zahl vertauscht.
+
+Temperaturen im Oktober:
+In dieser Aufgabe ging es darum dass man anhand der Temperatur in einem Monat verschiedene Werte berechnen kann.
+Diese Werte sind zum Beispiel das Minimum, das Maximum und der Mittelwert.
+
+Zahlensysteme:
+(Diese Aufgabe war eine Zusatztaufgabe)
+In dieser Aufgabe ging es darum dass man von einem Zahlensystem ins Dezimalsystem rechnen kann und umgekehrt.
+Möglich sind dabei die Zahlensysteme bis zum 20er-System.
+In diesem Projekt ist es möglich dass einige Variabeln schlechte Namen haben, weil das ursprüngliche Ziel war dass man von Dezimal zu Binär rechnen konnte.
