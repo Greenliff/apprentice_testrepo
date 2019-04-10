@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h2>Hangman</h2>
+
+@*This is just to see if the page works*@
+<div>
+    <div>Welcome to the Hangman web application.</div>
+    <div><a>Play</a></div>
+    <div><a>Submit new word</a></div>
+    @*@if (User.IsInRole("admin"))*@
+    @*  {*@
+    <div><a>View submitted words</a></div>
+    <div><a>Add language</a></div>
+    @*  }*@
+    <div><a>View leaderboard</a></div>
+</div>
