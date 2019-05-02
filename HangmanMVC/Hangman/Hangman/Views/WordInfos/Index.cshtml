@@ -1,8 +1,59 @@
-﻿@model Hangman.Models.WordInfo
+﻿@model IEnumerable<Hangman.Models.WordInfo>
 
 @{
-    ViewData["Title"] = "This is a title";
+    ViewData["Title"] = "Index";
 }
 
-<h2>WordInfo</h2>
+<h2>Index</h2>
 
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Word)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsApproved)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateSubmitted)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Submitter)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Language)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Word)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsApproved)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateSubmitted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Submitter.Mail)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Language.LanguageName)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.WordId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.WordId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.WordId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
